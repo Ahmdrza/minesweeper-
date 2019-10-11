@@ -1,2 +1,2 @@
-# minesweeper-
+# minesweeper 💣
 Minesweeper implemented in JavaScript
