@@ -1,0 +1,114 @@
+<style>
+    #game {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .tile {
+        border: 1px solid #333;
+        font-size: 30px;
+        cursor: pointer;
+        position: relative;
+        height: 45px;
+        flex-basis: calc(100% / 10);
+        text-align: center;
+    }
+    .tile .layer {
+        position: absolute;
+        background: transparent;
+        height: 100%;
+        width: 100%;
+        left: 0;
+        bottom: 0;
+    }
+</style>
+<div id="game"></div>
+
+<script>
+    class Minesweeper {
+
+        constructor(blocks) {
+            this.top_left = null;
+            this.top = null;
+            this.top_right = null;
+            this.left = null;
+            this.right = null;
+            this.bottom_left = null;
+            this.bottom = null;
+            this.bottom_right = null;
+            this.blocks = blocks || 6;
+            this.bomb_at_tiles = [];
+        }
+
+        drawBoard() {
+            for(var i=1; i<this.blocks+1; i++) {
+                for(var j=1; j<this.blocks+1; j++) {
+                    let a = document.createElement('div');
+                    // let b = document.createElement('span');
+                    // b.setAttribute('class', 'layer');
+                    a.setAttribute('class', 'tile');
+                    a.setAttribute('data-x', `${i}`);
+                    a.setAttribute('data-y', `${j}`);
+                    a.setAttribute('id', `${i}${j}`);
+                    a.setAttribute('data-has-bomb', false);
+                    // 🔥
+                    // a.appendChild(b);
+                    // a.innerHTML = '&nbsp;';
+                    document.getElementById('game').appendChild(a);
+                    a.addEventListener('click', this.tileClicked);
+                }
+                let a = document.createElement('br');
+                document.getElementById('game').append(a);
+            }
+        }
+
+        placeBombs() {
+            var i = 0;
+            while(i < 18){
+                let place = Math.floor(Math.random() * (99 - 11 + 1)) + 11;
+                if(document.getElementById(place) && this.bomb_at_tiles.indexOf(place) == -1) {
+                    document.getElementById(place).innerHTML = '💣';
+                    document.getElementById(place).setAttribute('data-has-bomb', true);
+                    this.bomb_at_tiles.push(place);
+                    i++;
+                }
+            }
+            console.log(this.bomb_at_tiles);
+        }
+
+        tileClicked(e) {
+            console.log(e.target.dataset);
+        }
+
+        checkNeighbors() {
+            let total_tiles = document.getElementsByClassName('tile');
+            var prev_tile, next_tile, top_left_tile, top_tile, top_right_tile, left_tile, right_tile, bottom_left_tile, bottom_tile, bottom_right_tile;
+            prev_tile = next_tile = top_left_tile = top_tile = top_right_tile = left_tile = right_tile = bottom_left_tile = bottom_tile = bottom_right_tile = null;
+            for(var i=0; i<total_tiles.length; i++) {
+                if(total_tiles[i].dataset.x > 1) {
+                    prev_tile = parseInt(total_tiles[i].dataset.x)-1;
+                }
+                if(total_tiles[i].dataset.x < this.blocks) {
+                    next_tile = parseInt(total_tiles[i].dataset.x)+1;
+                }
+                top_left_tile = (prev_tile) ? prev_tile.toString() + (total_tiles[i].dataset.y - 1) : null;
+                top_tile = (prev_tile) ? prev_tile.toString() + total_tiles[i].dataset.y : null;
+                top_right_tile = (prev_tile) ? prev_tile.toString() + (total_tiles[i].dataset.y + 1) : null;
+                left_tile = (total_tiles[i].dataset.x - 1) + total_tiles[i].dataset.y;
+                right_tile = total_tiles[i].dataset.x + (total_tiles[i].dataset.y + 1);
+                bottom_left_tile = (next_tile) ? next_tile.toString() + (total_tiles[i].dataset.y - 1) : null;
+                bottom_tile = (prev_tile) ? next_tile.toString() + (total_tiles[i].dataset.y - 1) : null;
+                bottom_right_tile = (prev_tile) ? next_tile.toString() + (total_tiles[i].dataset.y + 1) : null;
+                console.log(top_left_tile);
+                if(document.getElementById(top_left_tile)) {
+                    console.log(document.getElementById(top_left_tile).dataset);
+                }
+
+            }
+        }
+    }
+
+    my_game = new Minesweeper(9);
+    my_game.drawBoard();
+    my_game.placeBombs();
+    my_game.checkNeighbors();
+</script>
