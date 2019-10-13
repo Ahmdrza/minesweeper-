@@ -63,7 +63,7 @@
 
         placeBombs() {
             var i = 0;
-            while(i < 18){
+            while(i < 20){
                 let place = Math.floor(Math.random() * (99 - 11 + 1)) + 11;
                 if(document.getElementById(place) && this.bomb_at_tiles.indexOf(place) == -1) {
                     document.getElementById(place).innerHTML = '💣';
@@ -82,27 +82,68 @@
         checkNeighbors() {
             let total_tiles = document.getElementsByClassName('tile');
             var prev_tile, next_tile, top_left_tile, top_tile, top_right_tile, left_tile, right_tile, bottom_left_tile, bottom_tile, bottom_right_tile;
-            prev_tile = next_tile = top_left_tile = top_tile = top_right_tile = left_tile = right_tile = bottom_left_tile = bottom_tile = bottom_right_tile = null;
+            var total_bombs;
             for(var i=0; i<total_tiles.length; i++) {
-                if(total_tiles[i].dataset.x > 1) {
-                    prev_tile = parseInt(total_tiles[i].dataset.x)-1;
+                if(total_tiles[i].dataset.hasBomb == 'false') {
+                    prev_tile = next_tile = top_left_tile = top_tile = top_right_tile = left_tile = right_tile = bottom_left_tile = bottom_tile = bottom_right_tile = null;
+                    total_bombs = 0;
+                    if(total_tiles[i].dataset.x > 1) {
+                        prev_tile = parseInt(total_tiles[i].dataset.x)-1;
+                    }
+                    if(total_tiles[i].dataset.x < this.blocks) {
+                        next_tile = parseInt(total_tiles[i].dataset.x)+1;
+                    }
+                    top_left_tile = (prev_tile) ? prev_tile.toString() + (parseInt(total_tiles[i].dataset.y) - 1).toString() : null;
+                    top_tile = (prev_tile) ? prev_tile.toString() + (total_tiles[i].dataset.y).toString() : null;
+                    top_right_tile = (prev_tile && total_tiles[i].dataset.y !== this.blocks.toString()) ? prev_tile.toString() + (parseInt(total_tiles[i].dataset.y) + 1).toString() : null;
+                    left_tile = (total_tiles[i].dataset.y !== '1') ? (total_tiles[i].dataset.x).toString() + (parseInt(total_tiles[i].dataset.y) - 1).toString() : null;
+                    right_tile = (total_tiles[i].dataset.y !== this.blocks.toString()) ? (total_tiles[i].dataset.x).toString() + (parseInt(total_tiles[i].dataset.y) + 1).toString() : null;
+                    bottom_left_tile = (next_tile && total_tiles[i].dataset.y !== '1') ? next_tile.toString() + (parseInt(total_tiles[i].dataset.y) - 1).toString() : null;
+                    bottom_tile = (next_tile) ? next_tile.toString() + (total_tiles[i].dataset.y).toString() : null;
+                    bottom_right_tile = (next_tile && total_tiles[i].dataset.y !== this.blocks.toString()) ? next_tile.toString() + (parseInt(total_tiles[i].dataset.y) + 1).toString() : null;
+                    console.log(total_tiles[i], top_left_tile, top_tile, top_right_tile, left_tile, right_tile, bottom_left_tile, bottom_tile, bottom_right_tile);
+                    if(document.getElementById(top_left_tile)) {
+                        if(document.getElementById(top_left_tile).dataset.hasBomb == 'true') {
+                            total_bombs += 1;
+                        }
+                    }
+                    if(document.getElementById(top_tile)) {
+                        if(document.getElementById(top_tile).dataset.hasBomb == 'true') {
+                            total_bombs += 1;
+                        }
+                    }
+                    if(document.getElementById(top_right_tile)) {
+                        if(document.getElementById(top_right_tile).dataset.hasBomb == 'true') {
+                            total_bombs += 1;
+                        }
+                    }
+                    if(document.getElementById(left_tile)) {
+                        if(document.getElementById(left_tile).dataset.hasBomb == 'true') {
+                            total_bombs += 1;
+                        }
+                    }
+                    if(document.getElementById(right_tile)) {
+                        if(document.getElementById(right_tile).dataset.hasBomb == 'true') {
+                            total_bombs += 1;
+                        }
+                    }
+                    if(document.getElementById(bottom_left_tile)) {
+                        if(document.getElementById(bottom_left_tile).dataset.hasBomb == 'true') {
+                            total_bombs += 1;
+                        }
+                    }
+                    if(document.getElementById(bottom_tile)) {
+                        if(document.getElementById(bottom_tile).dataset.hasBomb == 'true') {
+                            total_bombs += 1;
+                        }
+                    }
+                    if(document.getElementById(bottom_right_tile)) {
+                        if(document.getElementById(bottom_right_tile).dataset.hasBomb == 'true') {
+                            total_bombs += 1;
+                        }
+                    }
+                    total_tiles[i].innerHTML = total_bombs;
                 }
-                if(total_tiles[i].dataset.x < this.blocks) {
-                    next_tile = parseInt(total_tiles[i].dataset.x)+1;
-                }
-                top_left_tile = (prev_tile) ? prev_tile.toString() + (total_tiles[i].dataset.y - 1) : null;
-                top_tile = (prev_tile) ? prev_tile.toString() + total_tiles[i].dataset.y : null;
-                top_right_tile = (prev_tile) ? prev_tile.toString() + (total_tiles[i].dataset.y + 1) : null;
-                left_tile = (total_tiles[i].dataset.x - 1) + total_tiles[i].dataset.y;
-                right_tile = total_tiles[i].dataset.x + (total_tiles[i].dataset.y + 1);
-                bottom_left_tile = (next_tile) ? next_tile.toString() + (total_tiles[i].dataset.y - 1) : null;
-                bottom_tile = (prev_tile) ? next_tile.toString() + (total_tiles[i].dataset.y - 1) : null;
-                bottom_right_tile = (prev_tile) ? next_tile.toString() + (total_tiles[i].dataset.y + 1) : null;
-                console.log(top_left_tile);
-                if(document.getElementById(top_left_tile)) {
-                    console.log(document.getElementById(top_left_tile).dataset);
-                }
-
             }
         }
     }
