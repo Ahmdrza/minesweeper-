@@ -27,16 +27,19 @@
     class Minesweeper {
 
         constructor(blocks) {
-            this.top_left = null;
-            this.top = null;
-            this.top_right = null;
-            this.left = null;
-            this.right = null;
-            this.bottom_left = null;
-            this.bottom = null;
-            this.bottom_right = null;
             this.blocks = blocks || 6;
             this.bomb_at_tiles = [];
+            this.neighbors = {
+                top_left : null,
+                top : null,
+                top_right : null,
+                left : null,
+                right : null,
+                bottom_left : null,
+                bottom : null,
+                bottom_right : null
+            };
+            self = this;
         }
 
         drawBoard() {
@@ -54,7 +57,7 @@
                     // a.appendChild(b);
                     // a.innerHTML = '&nbsp;';
                     document.getElementById('game').appendChild(a);
-                    a.addEventListener('click', this.tileClicked);
+                    a.addEventListener('click', this.checkNeighbors);
                 }
                 let a = document.createElement('br');
                 document.getElementById('game').append(a);
@@ -63,7 +66,7 @@
 
         placeBombs() {
             var i = 0;
-            while(i < 20){
+            while(i < 23){
                 let place = Math.floor(Math.random() * (99 - 11 + 1)) + 11;
                 if(document.getElementById(place) && this.bomb_at_tiles.indexOf(place) == -1) {
                     document.getElementById(place).innerHTML = '💣';
@@ -75,81 +78,37 @@
             console.log(this.bomb_at_tiles);
         }
 
-        tileClicked(e) {
-            console.log(e.target.dataset);
-        }
-
-        checkNeighbors() {
-            let total_tiles = document.getElementsByClassName('tile');
-            var prev_tile, next_tile, top_left_tile, top_tile, top_right_tile, left_tile, right_tile, bottom_left_tile, bottom_tile, bottom_right_tile;
+        checkNeighbors(ele) {
+            var prev_tile, next_tile;
             var total_bombs;
-            for(var i=0; i<total_tiles.length; i++) {
-                if(total_tiles[i].dataset.hasBomb == 'false') {
-                    prev_tile = next_tile = top_left_tile = top_tile = top_right_tile = left_tile = right_tile = bottom_left_tile = bottom_tile = bottom_right_tile = null;
-                    total_bombs = 0;
-                    if(total_tiles[i].dataset.x > 1) {
-                        prev_tile = parseInt(total_tiles[i].dataset.x)-1;
-                    }
-                    if(total_tiles[i].dataset.x < this.blocks) {
-                        next_tile = parseInt(total_tiles[i].dataset.x)+1;
-                    }
-                    top_left_tile = (prev_tile) ? prev_tile.toString() + (parseInt(total_tiles[i].dataset.y) - 1).toString() : null;
-                    top_tile = (prev_tile) ? prev_tile.toString() + (total_tiles[i].dataset.y).toString() : null;
-                    top_right_tile = (prev_tile && total_tiles[i].dataset.y !== this.blocks.toString()) ? prev_tile.toString() + (parseInt(total_tiles[i].dataset.y) + 1).toString() : null;
-                    left_tile = (total_tiles[i].dataset.y !== '1') ? (total_tiles[i].dataset.x).toString() + (parseInt(total_tiles[i].dataset.y) - 1).toString() : null;
-                    right_tile = (total_tiles[i].dataset.y !== this.blocks.toString()) ? (total_tiles[i].dataset.x).toString() + (parseInt(total_tiles[i].dataset.y) + 1).toString() : null;
-                    bottom_left_tile = (next_tile && total_tiles[i].dataset.y !== '1') ? next_tile.toString() + (parseInt(total_tiles[i].dataset.y) - 1).toString() : null;
-                    bottom_tile = (next_tile) ? next_tile.toString() + (total_tiles[i].dataset.y).toString() : null;
-                    bottom_right_tile = (next_tile && total_tiles[i].dataset.y !== this.blocks.toString()) ? next_tile.toString() + (parseInt(total_tiles[i].dataset.y) + 1).toString() : null;
-                    console.log(total_tiles[i], top_left_tile, top_tile, top_right_tile, left_tile, right_tile, bottom_left_tile, bottom_tile, bottom_right_tile);
-                    if(document.getElementById(top_left_tile)) {
-                        if(document.getElementById(top_left_tile).dataset.hasBomb == 'true') {
-                            total_bombs += 1;
-                        }
-                    }
-                    if(document.getElementById(top_tile)) {
-                        if(document.getElementById(top_tile).dataset.hasBomb == 'true') {
-                            total_bombs += 1;
-                        }
-                    }
-                    if(document.getElementById(top_right_tile)) {
-                        if(document.getElementById(top_right_tile).dataset.hasBomb == 'true') {
-                            total_bombs += 1;
-                        }
-                    }
-                    if(document.getElementById(left_tile)) {
-                        if(document.getElementById(left_tile).dataset.hasBomb == 'true') {
-                            total_bombs += 1;
-                        }
-                    }
-                    if(document.getElementById(right_tile)) {
-                        if(document.getElementById(right_tile).dataset.hasBomb == 'true') {
-                            total_bombs += 1;
-                        }
-                    }
-                    if(document.getElementById(bottom_left_tile)) {
-                        if(document.getElementById(bottom_left_tile).dataset.hasBomb == 'true') {
-                            total_bombs += 1;
-                        }
-                    }
-                    if(document.getElementById(bottom_tile)) {
-                        if(document.getElementById(bottom_tile).dataset.hasBomb == 'true') {
-                            total_bombs += 1;
-                        }
-                    }
-                    if(document.getElementById(bottom_right_tile)) {
-                        if(document.getElementById(bottom_right_tile).dataset.hasBomb == 'true') {
-                            total_bombs += 1;
-                        }
-                    }
-                    total_tiles[i].innerHTML = total_bombs;
-                }
+            prev_tile = next_tile = null;
+            total_bombs = 0;
+            if(ele.target.dataset.x > 1) {
+                prev_tile = parseInt(ele.target.dataset.x)-1;
             }
+            if(ele.target.dataset.x < self.blocks) {
+                next_tile = parseInt(ele.target.dataset.x)+1;
+            }
+            self.neighbors.top_left = (prev_tile) ? prev_tile.toString() + (parseInt(ele.target.dataset.y) - 1).toString() : null;
+            self.neighbors.top = (prev_tile) ? prev_tile.toString() + (ele.target.dataset.y).toString() : null;
+            self.neighbors.top_right = (prev_tile && ele.target.dataset.y !== self.blocks.toString()) ? prev_tile.toString() + (parseInt(ele.target.dataset.y) + 1).toString() : null;
+            self.neighbors.left = (ele.target.dataset.y !== '1') ? (ele.target.dataset.x).toString() + (parseInt(ele.target.dataset.y) - 1).toString() : null;
+            self.neighbors.right = (ele.target.dataset.y !== self.blocks.toString()) ? (ele.target.dataset.x).toString() + (parseInt(ele.target.dataset.y) + 1).toString() : null;
+            self.neighbors.bottom_left = (next_tile && ele.target.dataset.y !== '1') ? next_tile.toString() + (parseInt(ele.target.dataset.y) - 1).toString() : null;
+            self.neighbors.bottom = (next_tile) ? next_tile.toString() + (ele.target.dataset.y).toString() : null;
+            self.neighbors.bottom_right = (next_tile && ele.target.dataset.y !== self.blocks.toString()) ? next_tile.toString() + (parseInt(ele.target.dataset.y) + 1).toString() : null;
+            Object.keys(self.neighbors).forEach(neighbor => {
+                if(document.getElementById(self.neighbors[neighbor])) {
+                    if(document.getElementById(self.neighbors[neighbor]).dataset.hasBomb == 'true') {
+                        total_bombs += 1;
+                    }
+                }
+            });
+            ele.target.innerHTML = total_bombs;
         }
     }
 
     my_game = new Minesweeper(9);
     my_game.drawBoard();
     my_game.placeBombs();
-    my_game.checkNeighbors();
 </script>
