@@ -52,7 +52,6 @@
                     a.setAttribute('data-x', `${i}`);
                     a.setAttribute('data-y', `${j}`);
                     a.setAttribute('id', `${i}${j}`);
-                    a.setAttribute('data-has-bomb', false);
                     // 🔥
                     // a.appendChild(b);
                     // a.innerHTML = '&nbsp;';
@@ -70,7 +69,6 @@
                 let place = Math.floor(Math.random() * (99 - 11 + 1)) + 11;
                 if(document.getElementById(place) && this.bomb_at_tiles.indexOf(place) == -1) {
                     document.getElementById(place).innerHTML = '💣';
-                    document.getElementById(place).setAttribute('data-has-bomb', true);
                     this.bomb_at_tiles.push(place);
                     i++;
                 }
@@ -98,10 +96,8 @@
             self.neighbors.bottom = (next_tile) ? next_tile.toString() + (ele.target.dataset.y).toString() : null;
             self.neighbors.bottom_right = (next_tile && ele.target.dataset.y !== self.blocks.toString()) ? next_tile.toString() + (parseInt(ele.target.dataset.y) + 1).toString() : null;
             Object.keys(self.neighbors).forEach(neighbor => {
-                if(document.getElementById(self.neighbors[neighbor])) {
-                    if(document.getElementById(self.neighbors[neighbor]).dataset.hasBomb == 'true') {
-                        total_bombs += 1;
-                    }
+                if(self.neighbors[neighbor] && self.bomb_at_tiles.indexOf(parseInt(self.neighbors[neighbor])) > -1) {
+                    total_bombs += 1;
                 }
             });
             ele.target.innerHTML = total_bombs;
