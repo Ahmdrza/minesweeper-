@@ -17,8 +17,8 @@ class Minesweeper {
     }
 
     drawBoard() {
-        for(var i=1; i<this.blocks+1; i++) {
-            for(var j=1; j<this.blocks+1; j++) {
+        for(var i=1; i<(this.blocks)+1; i++) {
+            for(var j=1; j<(this.blocks*2)+1; j++) {
                 let a = document.createElement('div');
                 // let b = document.createElement('span');
                 // b.setAttribute('class', 'layer');
@@ -39,8 +39,8 @@ class Minesweeper {
 
     placeBombs() {
         var i = 0;
-        while(i < 23){
-            let place = Math.floor(Math.random() * (99 - 11 + 1)) + 11;
+        while(i < 45){
+            let place = Math.floor(Math.random() * (1224 - 11 + 1)) + 11;
             if(document.getElementById(place) && this.bomb_at_tiles.indexOf(place) == -1) {
                 document.getElementById(place).innerHTML = '<img class="bomb" src="assets/bomb.svg" />';
                 this.bomb_at_tiles.push(place);
@@ -78,6 +78,6 @@ class Minesweeper {
     }
 }
 
-my_game = new Minesweeper(9);
+my_game = new Minesweeper(12);
 my_game.drawBoard();
 my_game.placeBombs();
